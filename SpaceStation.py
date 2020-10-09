@@ -124,7 +124,7 @@ class SpaceStation:
 
         if horz_dist > 180 or vert_dist > 90:
             self.turtle.penup()
-        self.turtle.setposition(SpaceStation.get_coords())
+        self.turtle.setposition(x1, y1)
         self.turtle.pendown()
         return self.turtle.position()
 
