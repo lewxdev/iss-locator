@@ -119,13 +119,12 @@ class SpaceStation:
         x0, y0 = self.turtle.position()
         x1, y1 = SpaceStation.get_coords()
 
-        horz_dist = sum(map(lambda n: abs(n), (x0, x1)))
-        vert_dist = sum(map(lambda n: abs(n), (y0, y1)))
-
-        if horz_dist > 180 or vert_dist > 90:
+        if x0 * x1 <= 0 or y0 * y1 <= 0:
             self.turtle.penup()
-        self.turtle.setposition(x1, y1)
-        self.turtle.pendown()
+            self.turtle.setposition(x1, y1)
+            self.turtle.pendown()
+        else:
+            self.turtle.setposition(x1, y1)
         return self.turtle.position()
 
     def init_updater(self, interval=5000):
