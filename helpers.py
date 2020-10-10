@@ -36,8 +36,8 @@ def get_json(query_url, params={}):
 
         if not query_url.endswith("?"):
             query_url = f"{query_url}?"
-
         query_url = f"{query_url}{'&'.join(query_options)}"
 
     response = requests.get(query_url)
+    assert response.ok, "API call failed"
     return response.json()
