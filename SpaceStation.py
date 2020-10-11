@@ -32,7 +32,6 @@ class SpaceStation:
         base_url = "https://maps.googleapis.com/maps/api/geocode/json"
         options = {"latlng": f"{lat},{lon}", "key": api_key}
         data = get_json(base_url, params=options)
-        print(data)
 
         if data["status"] != "ZERO_RESULTS":
             if "compound_code" in data["plus_code"]:
