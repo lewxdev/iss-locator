@@ -27,7 +27,7 @@ class Window:
         else:
             self.screen.bgcolor(bg)
 
-    def draw_line(self, x=None, y=None):
+    def draw_line(self, x=None, y=None, color="black"):
         """Draws a non-diagonal line onscreen for a given bounding box
 
         The optional parameters `x` and `y` are mutually exclusive and
@@ -36,6 +36,7 @@ class Window:
         lhb, lvb, uhb, uvb = self.bounds
 
         pen = turtle.Turtle(visible=False)
+        pen.pencolor(color)
         pen.speed(0)
         pen.penup()
 
@@ -61,11 +62,11 @@ class Window:
                 for coord in n, -n:
                     Window.draw_line(self, y=coord)
             else:
-                Window.draw_line(self, y=n)
+                Window.draw_line(self, y=n, color="red")
 
         for n in range(0, abs_vb + 1, size):
             if n != 0:
                 for coord in n, -n:
                     Window.draw_line(self, x=coord)
             else:
-                Window.draw_line(self, x=n)
+                Window.draw_line(self, x=n, color="red")

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import turtle
+from config import api_key
 from datetime import datetime
 from helpers import create_heading, get_json
 
@@ -28,34 +29,29 @@ class SpaceStation:
 
     def get_locale_info(lat, lon):
         """Returns locality information for the given `lat` and `lon`"""
-        base_url = "https://api.bigdatacloud.net/data/reverse-geocode-client"
-        data = get_json(base_url, params={"latitude": lat, "longitude": lon})
+        base_url = "https://maps.googleapis.com/maps/api/geocode/json"
+        options = {"latlng": f"{lat},{lon}", "key": api_key}
+        data = get_json(base_url, params=options)
+        print(data)
 
-        locality = data["locality"]
-        state = data["principalSubdivision"]
-
-        for props in data["localityInfo"].values():
-            for prop in props:
-                if prop["name"] in ("Ocean", "Sea"):
-                    waters = prop["name"]
-                    break
-            else:
-                continue
-            break
-
-        return locality or state or waters or "Unknown"
+        if data["status"] != "ZERO_RESULTS":
+            if "compound_code" in data["plus_code"]:
+                return data["plus_code"]["compound_code"].split(maxsplit=1)[1]
+            for result in data["results"]:
+                if "Ocean" in result["formatted_address"]:
+                    return result["formatted_address"]
+        return "Unknown"
 
     def get_info(self, output=False):
         """Retrieves information about the current state of the ISS
         (with optional print `output`) and stores in instance of `self`.
         """
-        positional_data = get_json("http://api.open-notify.org/iss-now.json")
-        self.geo_location = positional_data["iss_position"]
-        self.last_update = positional_data["timestamp"]
+        data = get_json("http://api.open-notify.org/iss-now.json")
+        lat = float(data["iss_position"]["latitude"])
+        lon = float(data["iss_position"]["longitude"])
 
-        geo_coords = [float(unit) for unit in self.geo_location.values()]
-        self.xy_location = geo_coords[::-1]
-        self.locality = SpaceStation.get_locale_info(*geo_coords)
+        self.xy_location = lon, lat
+        self.last_update = data["timestamp"]
         self.passengers = [
             astronaut["name"]
             for astronaut
@@ -66,9 +62,10 @@ class SpaceStation:
         if output:
             readable_date = datetime.fromtimestamp(self.last_update)
             print(create_heading(f"ISS Information ({readable_date})"))
+            self.locality = SpaceStation.get_locale_info(lat, lon)
             print(f"Above: {self.locality}")
 
-            for unit, value in self.geo_location.items():
+            for unit, value in data["iss_position"].items():
                 print(f"{unit.capitalize()}: {value}")
             if self.passengers:
                 print("Passengers:")
@@ -90,13 +87,12 @@ class SpaceStation:
             for index, pass_ in enumerate(next_pass["response"]):
                 readable_date = datetime.fromtimestamp(pass_['risetime'])
                 print(f"{index + 1}. {readable_date}")
-        self.passes[(lat, lon)] = next_pass
 
     def set_coords(self):
         """Sets the positional coordinates of the ISS turtle on screen
         to match the response coordinates from Open Notify.
         """
-        if not hasattr(self, "position"):
+        if not hasattr(self, "xy_location"):
             self.get_info()
             self.turtle.setposition(*self.xy_location)
         else:
