@@ -1,6 +1,28 @@
 #!/usr/bin/env python
 
 import requests
+from datetime import datetime, timedelta
+
+
+def relative_fromtimestamp(timestamp):
+    """Returns a relative time in the format "Today/Tomorrow/DD at time".
+    Accepts a timestamp as the required argument
+    """
+    assert isinstance(timestamp, (str, int)), "`timestamp` must be str or int"
+    if isinstance(timestamp, str):
+        assert timestamp.isdigit()
+    query = datetime.fromtimestamp(timestamp)
+    query_date = query.date()
+    query_time = query.strftime("%H:%M")
+
+    date_today = datetime.today().date()
+    date_tomorrow = date_today + timedelta(days=1)
+
+    if query_date == date_today:
+        return f"Today at {query_time}"
+    if query_date == date_tomorrow:
+        return f"Tomorrow at {query_time}"
+    return f"{query.strftime('%A')} at {query_time}"
 
 
 def create_heading(text, symbol="-", occurs=8):

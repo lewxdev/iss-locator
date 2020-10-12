@@ -3,7 +3,7 @@
 import turtle
 from config import api_key
 from datetime import datetime
-from helpers import create_heading, get_json
+from helpers import relative_fromtimestamp, create_heading, get_json
 
 
 class SpaceStation:
@@ -59,7 +59,7 @@ class SpaceStation:
         ]
 
         if output:
-            readable_date = datetime.fromtimestamp(self.last_update)
+            readable_date = relative_fromtimestamp(self.last_update)
             print(create_heading(f"ISS Information ({readable_date})"))
             self.locality = SpaceStation.get_locale_info(lat, lon)
             print(f"Above: {self.locality}")
@@ -84,7 +84,7 @@ class SpaceStation:
             print(create_heading(f"Next Pass ({locality})"))
 
             for index, pass_ in enumerate(next_pass["response"]):
-                readable_date = datetime.fromtimestamp(pass_['risetime'])
+                readable_date = relative_fromtimestamp(pass_['risetime'])
                 print(f"{index + 1}. {readable_date}")
 
     def set_coords(self):
