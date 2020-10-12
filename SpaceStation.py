@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 
 import turtle
-from config import api_key
-from datetime import datetime
 from helpers import relative_fromtimestamp, create_heading, get_json
+try:
+    from config import api_key
+    G_API_AVAILABLE = True
+except ImportError:
+    G_API_AVAILABLE = False
 
 
 class SpaceStation:
@@ -29,6 +32,9 @@ class SpaceStation:
 
     def get_locale_info(lat, lon):
         """Returns locality information for the given `lat` and `lon`"""
+        if not G_API_AVAILABLE:
+            return "Unavailable"
+
         base_url = "https://maps.googleapis.com/maps/api/geocode/json"
         options = {"latlng": f"{lat},{lon}", "key": api_key}
         data = get_json(base_url, params=options)
@@ -71,7 +77,7 @@ class SpaceStation:
                 for astronaut in self.passengers:
                     print(f"\t- {astronaut}")
 
-    def get_next_pass(self, lat, lon, output=False):
+    def get_next_pass(self, lat, lon, output=False, locality=None):
         """Returns the data received from Open Notify about the next
         pass of the ISS for a given `lat` and `lon` (with optional
         `output`).
@@ -80,7 +86,8 @@ class SpaceStation:
         next_pass = get_json(base_url, params={"lat": lat, "lon": lon})
 
         if output:
-            locality = SpaceStation.get_locale_info(lat, lon)
+            if not locality:
+                locality = SpaceStation.get_locale_info(lat, lon)
             print(create_heading(f"Next Pass ({locality})"))
 
             for index, pass_ in enumerate(next_pass["response"]):

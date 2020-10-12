@@ -22,6 +22,7 @@ def main():
 
     user = get_json("https://ipinfo.io/")
     user_location = tuple(map(lambda n: float(n), user["loc"].split(",")))
+    user_locality = f"{user['city']}, {user['region']}, {user['country']}"
 
     pin = turtle.Turtle("circle", visible=False)
     pin.penup()
@@ -31,7 +32,8 @@ def main():
     pin.showturtle()
 
     iss = SpaceStation(window.screen)
-    pin.onclick(lambda x, y: iss.get_next_pass(*pin.pos()[::-1], output=True))
+    pin.onclick(lambda x, y: iss.get_next_pass(*pin.pos()[::-1], output=True,
+                                               locality=user_locality))
     window.screen.mainloop()
 
 
