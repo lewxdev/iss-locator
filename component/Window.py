@@ -6,17 +6,14 @@ import turtle
 class Window:
     """Provides methods for manipulating the tkinter/turtle window/screen"""
     def __init__(self, bounds, bg):
-        """Initialize the tkinter/turtle window/screen for interfacing.
-
-        `kwargs` is a dictionary where each key is a method of a _Screen,
-        and each value is a list of required arguments to be passed in.
-        """
+        """Initialize the tkinter/turtle window/screen for interfacing."""
         self.screen = turtle.Screen()
 
         assert isinstance(bounds, tuple), "`bounds` must be a tuple"
         for n in bounds:
             assert isinstance(n, (int, float)), "`bounds` content not digit"
         assert len(bounds) == 4, "`bounds` must only have 4 values"
+
         self.bounds = bounds
         self.screen.setworldcoordinates(*self.bounds)
 

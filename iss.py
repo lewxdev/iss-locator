@@ -4,12 +4,12 @@ __author__ = "J. Lewis, @lewxdev"
 
 import turtle
 from helpers import create_heading, get_json
-from SpaceStation import SpaceStation
-from Window import Window
+from component.Window import Window
+from component.SpaceStation import SpaceStation
 
 
 def main():
-    window = Window((-180, -90, 180, 90), "map.gif")
+    window = Window((-180, -90, 180, 90), "./img/map.gif")
     # latitude/longitude bounds: 180 and 90deg respectively
     window.draw_grid(size=15)
 
@@ -21,7 +21,7 @@ def main():
     print("- Click on the ISS to display it's information")
 
     user = get_json("https://ipinfo.io/")
-    user_location = tuple(map(lambda n: float(n), user["loc"].split(",")))
+    user_location = [float(n) for n in user["loc"].split(",")]
     user_locality = f"{user['city']}, {user['region']}, {user['country']}"
 
     pin = turtle.Turtle("circle", visible=False)

@@ -4,20 +4,18 @@ import turtle
 from helpers import relative_fromtimestamp, create_heading, get_json
 try:
     from config import api_key
-    G_API_AVAILABLE = True
 except ImportError:
-    G_API_AVAILABLE = False
+    api_key = None
 
 
 class SpaceStation:
     """Provides methods for manipulating the ISS turtle"""
-    def __init__(self, screen, img="iss.gif", path_color="red"):
+    def __init__(self, screen, img="./img/iss.gif", path_color="red"):
         """Initializes a unique ISS turtle on the given `screen`"""
         assert isinstance(screen, turtle._Screen), "`screen` must be _Screen"
         for turtle_ in screen.turtles():
             assert turtle_.shape() != img, "ISS already initialized on screen"
 
-        self.passes = {}
         self.screen = screen
         self.screen.register_shape(img)
 
@@ -32,7 +30,7 @@ class SpaceStation:
 
     def get_locale_info(lat, lon):
         """Returns locality information for the given `lat` and `lon`"""
-        if not G_API_AVAILABLE:
+        if not api_key:
             return "Unavailable"
 
         base_url = "https://maps.googleapis.com/maps/api/geocode/json"
@@ -91,7 +89,7 @@ class SpaceStation:
             print(create_heading(f"Next Pass ({locality})"))
 
             for index, pass_ in enumerate(next_pass["response"]):
-                readable_date = relative_fromtimestamp(pass_['risetime'])
+                readable_date = relative_fromtimestamp(pass_["risetime"])
                 print(f"{index + 1}. {readable_date}")
 
     def set_coords(self):
